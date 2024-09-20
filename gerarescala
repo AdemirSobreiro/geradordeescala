@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Escala de Trabalho</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body { 
+            font-family: 'Roboto', sans-serif; 
+            margin: 20px; 
+            background-color: #f4f4f9; 
+            color: #333; 
+        }
+        input, button { 
+            margin: 10px 0; 
+            padding: 10px; 
+            border-radius: 5px; 
+            border: 1px solid #ccc; 
+        }
+        button {
+            background-color: #007BFF; 
+            color: white; 
+            border: none; 
+            cursor: pointer; 
+        }
+        button:hover {
+            background-color: #0056b3; 
+        }
+        #banner, #footer { 
+            width: 100%; 
+            height: auto; 
+            margin: 20px 0; 
+            border-radius: 5px; 
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); 
+        }
+        h1 { 
+            text-align: center; 
+            color: #007BFF; 
+        }
+        #output { 
+            margin-top: 20px; 
+            overflow-x: auto; 
+        }
+        table { 
+            width: 100%; 
+            border-collapse: collapse; 
+            margin-top: 20px; 
+            background-color: white; 
+            border-radius: 5px; 
+            overflow: hidden; 
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); 
+        }
+        th, td { 
+            border: 1px solid #ddd; 
+            padding: 12px; 
+            text-align: left; 
+        }
+        th { 
+            background-color: #f2f2f2; 
+        }
+        tr {
+            border-bottom: 2px solid #ddd; 
+        }
+        tr:last-child {
+            border-bottom: none; 
+        }
+    </style>
+</head>
+<body>
+
+<!-- Banner -->
+<img id="banner" src="https://i.ibb.co/yQmM3WS/banner.png" alt="Banner">
+
+<h1>Gerador de Escala de Trabalho</h1>
+<form id="scheduleForm">
+    <div class="employee">
+        <label for="employeeName1">Nome do Funcionário 1:</label>
+        <input type="text" id="employeeName1" required>
+        <label for="firstOff1">Primeiro Dia de Folga (DD/MM):</label>
+        <input type="text" id="firstOff1" placeholder="01/01" required>
+    </div>
+    <div class="employee">
+        <label for="employeeName2">Nome do Funcionário 2:</label>
+        <input type="text" id="employeeName2">
+        <label for="firstOff2">Primeiro Dia de Folga (DD/MM):</label>
+        <input type="text" id="firstOff2" placeholder="01/01">
+    </div>
+    <div class="employee">
+        <label for="employeeName3">Nome do Funcionário 3:</label>
+        <input type="text" id="employeeName3">
+        <label for="firstOff3">Primeiro Dia de Folga (DD/MM):</label>
+        <input type="text" id="firstOff3" placeholder="01/01">
+    </div>
+    <div class="employee">
+        <label for="employeeName4">Nome do Funcionário 4:</label>
+        <input type="text" id="employeeName4">
+        <label for="firstOff4">Primeiro Dia de Folga (DD/MM):</label>
+        <input type="text" id="firstOff4" placeholder="01/01">
+    </div>
+    <div class="employee">
+        <label for="employeeName5">Nome do Funcionário 5:</label>
+        <input type="text" id="employeeName5">
+        <label for="firstOff5">Primeiro Dia de Folga (DD/MM):</label>
+        <input type="text" id="firstOff5" placeholder="01/01">
+    </div>
+    <div class="employee">
+        <label for="employeeName6">Nome do Funcionário 6:</label>
+        <input type="text" id="employeeName6">
+        <label for="firstOff6">Primeiro Dia de Folga (DD/MM):</label>
+        <input type="text" id="firstOff6" placeholder="01/01">
+    </div>
+
+    <button type="submit">Gerar Escala</button>
+    <button type="button" id="clearButton">Limpar Dados</button>
+</form>
+
+<div id="output"></div>
+
+<!-- Rodapé -->
+<img id="footer" src="https://i.ibb.co/znShR5q/rodape.png" alt="Rodapé">
+
+<script>
+document.getElementById('scheduleForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+
+    const output = document.getElementById('output');
+    output.innerHTML = ''; // Limpa a saída anterior
+
+    for (let i = 1; i <= 6; i++) {
+        const name = document.getElementById(`employeeName${i}`).value;
+        const firstOff = document.getElementById(`firstOff${i}`).value;
+
+        // Verifica se o nome e o dia de folga foram preenchidos
+        if (name && firstOff) {
+            const day = parseInt(firstOff.split('/')[0], 10);
+            const month = parseInt(firstOff.split('/')[1], 10) - 1;
+
+            const today = new Date();
+            const year = today.getFullYear();
+            const firstOffDate = new Date(year, month, day);
+            
+            let dates = [];
+            let weekdays = [];
+            for (let j = 0; j < 12; j++) {
+                const dayOfWeek = firstOffDate.getDay();
+
+                // Adiciona as datas e os dias da semana
+                const formattedDate = firstOffDate.toLocaleDateString('pt-BR');
+                const weekdayName = firstOffDate.toLocaleString('pt-BR', { weekday: 'long' });
+
+                if (dayOfWeek === 1) { // Segunda-feira
+                    dates.push(`${formattedDate} (folga)`);
+                    weekdays.push(weekdayName);
+                    const nextSaturday = new Date(firstOffDate);
+                    nextSaturday.setDate(firstOffDate.getDate() + 5);
+                    dates.push(`${nextSaturday.toLocaleDateString('pt-BR')} (meia folga - sábado)`);
+                    weekdays.push(nextSaturday.toLocaleString('pt-BR', { weekday: 'long' }));
+                } else if (dayOfWeek === 3) { // Quarta-feira
+                    const previousTuesday = new Date(firstOffDate);
+                    previousTuesday.setDate(firstOffDate.getDate() - 1);
+                    dates.push(`${previousTuesday.toLocaleDateString('pt-BR')} (meia folga - terça)`);
+                    weekdays.push(previousTuesday.toLocaleString('pt-BR', { weekday: 'long' }));
+                    dates.push(`${formattedDate} (folga)`);
+                    weekdays.push(weekdayName);
+                } else if (dayOfWeek === 5) { // Sexta-feira
+                    const previousThursday = new Date(firstOffDate);
+                    previousThursday.setDate(firstOffDate.getDate() - 1);
+                    dates.push(`${previousThursday.toLocaleDateString('pt-BR')} (meia folga - quinta)`);
+                    weekdays.push(previousThursday.toLocaleString('pt-BR', { weekday: 'long' }));
+                    dates.push(`${formattedDate} (folga)`);
+                    weekdays.push(weekdayName);
+                } else {
+                    dates.push(`${formattedDate} (folga)`);
+                    weekdays.push(weekdayName);
+                }
+
+                if (dayOfWeek === 1 || dayOfWeek === 3 || dayOfWeek === 5) {
+                    const nextSunday = new Date(firstOffDate);
+                    nextSunday.setDate(firstOffDate.getDate() + (7 - dayOfWeek));
+                    dates.push(`${nextSunday.toLocaleDateString('pt-BR')} (domingo)`);
+                    weekdays.push(nextSunday.toLocaleString('pt-BR', { weekday: 'long' }));
+                }
+
+                firstOffDate.setDate(firstOffDate.getDate() + 6);
+            }
+
+            // Cria uma tabela para cada funcionário
+            let tableHTML = `<h2>Folgas de ${name}:</h2><table><thead><tr><th>Datas de Folga</th><th>Dia da Semana</th></tr></thead><tbody>`;
+            for (let k = 0; k < dates.length; k++) {
+                tableHTML += `<tr><td>${dates[k]}</td><td>${weekdays[k]}</td></tr>`;
+            }
+            tableHTML += '</tbody></table>';
+            output.innerHTML += tableHTML; // Adiciona a tabela ao output
+        }
+    }
+});
+
+document.getElementById('clearButton').addEventListener('click', function() {
+    document.getElementById('scheduleForm').reset();
+    document.getElementById('output').innerHTML = ''; // Limpa a saída
+});
+</script>
+
+</body>
+</html>
